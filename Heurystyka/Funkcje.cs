@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Heurystyka
 {
-    public class Heurystyka
+    public class Funkcje
     {
         public static double Rastrigin(double[] x)
         {
