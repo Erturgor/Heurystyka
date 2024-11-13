@@ -23,10 +23,6 @@ namespace Heurystyka
         public double max { get; set; }
         public Func<double[], double> fun { get; set; }
 
-        private bool checkRange(double x) // Dla Bukina to nie zadziala ale ****
-        {
-            return (x >= min) && x <= max;
-        }
         //Parametry Equilibrum
         double a1 { get; set; }
         double a2 { get; set; }
@@ -76,12 +72,13 @@ namespace Heurystyka
                         G0[k] = generationControlParameter[k] * (Ceq[k] - lamda[k] * particles[j][k]);
                         G[k] = G0[k] * F[k];
                         var temp = Ceq[k] + (particles[j][k] - Ceq[k]) * F[k] + G[k] * (1 - F[k]);
-                        if (checkRange(temp)) particles[j][k] = temp;
+                        particles[j][k]  = Math.Max(min, Math.Min(max, temp));
 
                     }
                 }
+
             }
-            equilibrumPool.Sort((x1, x2) => fun(x1).CompareTo(fun(x2)));
+            equilibrumPool.Sort((x1, x2) => fun(x1).CompareTo(fun(x2))); //czysto teoretycznie average moze byc lepszy
             XBest = equilibrumPool[0];
             FBest = fun(equilibrumPool[0]);
             return FBest;
@@ -169,6 +166,7 @@ namespace Heurystyka
                 var average = equilibrumPool[4];
                 average[i] = (equilibrumPool[0][i] + equilibrumPool[1][i] + equilibrumPool[2][i] + equilibrumPool[3][i])/4;
             }
+
 
         }
         private double[] randomTable()
