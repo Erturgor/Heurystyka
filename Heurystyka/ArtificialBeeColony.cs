@@ -55,7 +55,7 @@ namespace Heurystyka
 
             for (int i = 1; i < size; i++)
             {
-                if (fitnesses[i] < FBest) 
+                if (fitnesses[i] > FBest) 
                 {
                     FBest = fitnesses[i];
                     XBest = bees[i];
@@ -142,7 +142,7 @@ namespace Heurystyka
         {
             double[] newSolution = generateNewSolution(i);
             double newFitness = fitness(newSolution);
-            if (newFitness < fitnesses[i])
+            if (newFitness > fitnesses[i])
             {
                 bees[i] = newSolution;
                 fitnesses[i] = newFitness;
