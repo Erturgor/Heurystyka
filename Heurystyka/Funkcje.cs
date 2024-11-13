@@ -14,20 +14,19 @@ namespace Heurystyka
             double n = x.Length;
             double sum = 0.0;
 
-            for (int i = 0; i < x.Length - 1; i++)
+            for (int i = 0; i < x.Length; i++)
             {
-                double term = Math.Pow(x[i], 2) - A * Math.Cos(2 * Math.PI * x[i] * Math.PI / 180);
+                double term = Math.Pow(x[i], 2) - A * Math.Cos(2 * Math.PI * x[i] );
                 sum += term;
             }
-            sum += A * n + sum;
 
-            return sum;
+            return A * n + sum;
         }
         public static double Sphere(double[] x)
         {
             double sum = 0.0;
 
-            for (int i = 0; i < x.Length - 1; i++)
+            for (int i = 0; i < x.Length; i++)
             {
                 double term =  Math.Pow(x[i], 2);
                 sum += term;
@@ -39,7 +38,7 @@ namespace Heurystyka
         {
             double sum = 0.0;
 
-            sum = Math.Pow(1.5 - x[0] + x[0] * x[1],2) + Math.Pow(2.25 - x[0] + x[0] * x[1] * x[1], 2)+ Math.Pow(2.25 - x[0] + x[0] * Math.Pow(x[1],3), 2);
+            sum = Math.Pow(1.5 - x[0] + x[0] * x[1],2) + Math.Pow(2.25 - x[0] + x[0] * x[1] * x[1], 2)+ Math.Pow(2.625 - x[0] + x[0] * Math.Pow(x[1],3), 2);
             return sum;
         }
         public static double Bukin(double[] x)
@@ -62,7 +61,7 @@ namespace Heurystyka
         {
             double sum = 0.0;
 
-            for (int i = 0; i < x.Length - 1; i++)
+            for (int i = 0; i < x.Length-1; i++)
             {
                 double term1 = 100.0 * Math.Pow(x[i + 1] - Math.Pow(x[i], 2), 2);
                 double term2 = Math.Pow(1.0 - x[i], 2);
