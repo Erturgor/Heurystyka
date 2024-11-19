@@ -49,19 +49,18 @@ namespace Heurystyka
                 SendEmployedBees();
                 SendOnlookerBees();
                 SendScoutBees();
-            }
-            FBest = fitnesses[0];
-            XBest = bees[0];
-
-            for (int i = 1; i < size; i++)
-            {
-                if (fitnesses[i] > FBest) 
+                for (int j = 1; j < size; j++)
                 {
-                    FBest = fitnesses[i];
-                    XBest = bees[i];
+                    if (fitnesses[j] > FBest)
+                    {
+                        FBest = fitnesses[j];
+                        XBest = bees[j];
+                    }
                 }
             }
+
             return FBest;
+
         }
 
 
@@ -83,6 +82,8 @@ namespace Heurystyka
                 fitnesses[i] = fitness(bees[i]);
                 trial[i] = 0;
             }
+            FBest = fitnesses[0];
+            XBest = bees[0];
         }
 
         private double fitness(double[] value)
