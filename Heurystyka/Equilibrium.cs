@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Heurystyka
@@ -27,6 +28,7 @@ namespace Heurystyka
         double a1 { get; set; }
         double a2 { get; set; }
         double GP { get; set; }
+                int currentIteration;
         List<double[]> equilibrumPool;
         List<double[]> particles;
         List<double[]> oldParticles;//Czastki pamietaja swoje jedno polozenie wczesniej
@@ -47,12 +49,12 @@ namespace Heurystyka
         public double Solve()
         {
             bool readed = readFile();
-            if (!readed) generateParticles();
-            for (int i = 1; i <= iteration; i++)
+            if (!readed) { generateParticles(); currentIteration = 1; }
+            while(currentIteration <= iteration)
             {
                 checkFitness();
-                if (i > 1) memorySave();
-                double t = Math.Pow((1 - i / iteration), (a2 * i / iteration));
+                if (currentIteration > 1) memorySave();
+                double t = Math.Pow((1 - currentIteration / iteration), (a2 * currentIteration / iteration));
                 for (int j = 0; j < size; j++)
                 {
                     Random rd = new Random();
@@ -76,7 +78,7 @@ namespace Heurystyka
 
                     }
                 }
-
+                currentIteration++;
             }
             equilibrumPool.Sort((x1, x2) => fun(x1).CompareTo(fun(x2))); //czysto teoretycznie average moze byc lepszy
             XBest = equilibrumPool[0];
@@ -87,7 +89,51 @@ namespace Heurystyka
 
         private bool readFile()
         {
-            return false; 
+            string filePath = "equilibrum.json";
+
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    string jsonContent = File.ReadAllText(filePath);
+                    var state = JsonSerializer.Deserialize<Equilibrium>(jsonContent);
+
+                    if (state == null)
+                    {
+                        return false;
+                    }
+                    Name = state.Name;
+                    XBest = state.XBest;
+                    FBest = state.FBest;
+                    NumberOfEvaluationFitnessFunction = state.NumberOfEvaluationFitnessFunction;
+
+                    size = state.size;
+                    iteration = state.iteration;
+                    dimensions = state.dimensions;
+                    min = state.min;
+                    max = state.max;
+
+                    a1 = state.a1;
+                    a2 = state.a2;
+                    GP = state.GP;
+
+                    equilibrumPool = state.equilibrumPool;
+                    particles = state.particles;
+                    oldParticles = state.oldParticles;
+
+                    fun = state.fun;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
         private void generateParticles()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Heurystyka
@@ -9,7 +10,7 @@ namespace Heurystyka
     public class ArtificialBeeColony : IOptimizationAlogirthm
     {
         // Zalozenia odgorne
-        public string Name { get; set; }
+        public string Name { get; set; } = "Artificla Bee Colony Algorithm";
         public double[] XBest { get; set; }
         public double FBest { get; set; }
         public int NumberOfEvaluationFitnessFunction { get; set; }
@@ -22,6 +23,7 @@ namespace Heurystyka
         public double max { get; set; }
         public Func<double[], double> fun { get; set; }
         //Parametry ABC
+        int currentIteration;
         List<double[]> bees;
         double[] fitnesses;
         int[] trial;
@@ -37,14 +39,14 @@ namespace Heurystyka
             trial = new int[size];
             for (int j = 0; j < size; j++)
             {
-                trial[j] = 0; 
+                trial[j] = 0;
             }
         }
         public double Solve()
         {
             bool readed = readFile();
-            if (!readed) generateBees();
-            for (int i = 1; i <= iteration; i++)
+            if (!readed) { generateBees(); currentIteration = 1; }
+            while (currentIteration <= iteration)
             {
                 SendEmployedBees();
                 SendOnlookerBees();
@@ -57,6 +59,7 @@ namespace Heurystyka
                         XBest = bees[j];
                     }
                 }
+                currentIteration++;
             }
 
             return FBest;
@@ -66,7 +69,48 @@ namespace Heurystyka
 
         private bool readFile()
         {
-            return false;
+            string filePath = "ABC.json";
+
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    string jsonContent = File.ReadAllText(filePath);
+                    var state = JsonSerializer.Deserialize<ArtificialBeeColony>(jsonContent);
+
+                    if (state == null)
+                    {
+                        return false;
+                    }
+
+                    XBest = state.XBest;
+                    FBest = state.FBest;
+                    NumberOfEvaluationFitnessFunction = state.NumberOfEvaluationFitnessFunction;
+
+                    size = state.size;
+                    iteration = state.iteration;
+                    dimensions = state.dimensions;
+                    min = state.min;
+                    max = state.max;
+                    currentIteration = state.currentIteration;
+
+                    bees = state.bees;
+                    fitnesses = state.fitnesses;
+                    trial = state.trial;
+
+                    fun = state.fun;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
         private void generateBees()
         {
@@ -88,7 +132,7 @@ namespace Heurystyka
 
         private double fitness(double[] value)
         {
-            return 1 / (1 + fun(value));  
+            return 1 / (1 + fun(value));
         }
 
         private double[] generateNewSolution(int i)
@@ -161,7 +205,7 @@ namespace Heurystyka
             Random random = new Random();
             for (int i = 0; i < size; i++)
             {
-                if (trial[i] > size *dimensions) 
+                if (trial[i] > size * dimensions)
                 {
                     for (int j = 0; j < dimensions; j++)
                         bees[i][j] = min + random.NextDouble() * (max - min);
