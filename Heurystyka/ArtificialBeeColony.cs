@@ -166,19 +166,28 @@ namespace Heurystyka
         {
             Random rd = new Random();
             double totalFitness = 0.0;
-            double[] prob = new double[size];
+            double[] cumulativeProbabilities = new double[size];
 
             for (int i = 0; i < size; i++)
                 totalFitness += fitnesses[i];
 
-            for (int i = 0; i < size; i++)
-                prob[i] = fitnesses[i] / totalFitness; //zmienic obliczanie prawdopodobienstwa?
-
+            double cumulativeSum = 0.0;
             for (int i = 0; i < size; i++)
             {
-                if (rd.NextDouble() < prob[i])
+                cumulativeSum += fitnesses[i] / totalFitness;
+                cumulativeProbabilities[i] = cumulativeSum;
+            }
+            for (int i = 0; i < size; i++)
+            {
+                double randomValue = rd.NextDouble(); 
+
+                for (int j = 0; j < size; j++)
                 {
-                    createAndCheckFitness(i);
+                    if (randomValue < cumulativeProbabilities[j])
+                    {
+                        createAndCheckFitness(j);
+                        break;
+                    }
                 }
             }
         }
